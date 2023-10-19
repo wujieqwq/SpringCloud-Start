@@ -1,0 +1,40 @@
+server:
+  port: 10086
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: gateway
+
+  cloud:
+    nacos:
+      server-addr: 127.0.0.1:8848
+    gateway:
+      routes:
+        - id: cart-service
+          predicates:
+            - Path=/api/cart/**
+          uri:
+            lb://cart-service
+          filters:
+            - StripPrefix=1
+            - MyFilter=1,2,3
+        - id: product-service
+          predicates:
+            - Path=/product/**
+          uri:
+            lb://product-service
+#      default-filters:
+#        - AddRequestHeader=address, HZ
+logging:
+  level:
+    com.wujie: debug
+
+shop:
+  auth:
+    exclude-path:
+      - /product/**
+      - /user/login
+    include-path:
+      - /cart/**
